@@ -1,0 +1,230 @@
+/* Panel de notifications */
+.skillset-notifications-panel {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.skillset-notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+.skillset-notifications-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.skillset-notifications-count {
+    font-size: 14px;
+}
+
+.skillset-notifications-count .unread-count {
+    color: #d32f2f;
+    font-weight: 500;
+}
+
+.skillset-notifications-count .all-read {
+    color: #388e3c;
+}
+
+.skillset-notifications-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.skillset-notification {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.skillset-notification:hover {
+    background-color: #f5f5f5;
+}
+
+.skillset-notification-unread {
+    background-color: #f0f7ff;
+}
+
+.skillset-notification-unread:hover {
+    background-color: #e3f2fd;
+}
+
+.skillset-notification-content {
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.skillset-notification-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+}
+
+.skillset-notification-time {
+    font-style: italic;
+}
+
+.skillset-mark-read {
+    background: none;
+    border: none;
+    color: #1e88e5;
+    cursor: pointer;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.skillset-mark-read:hover {
+    color: #0d47a1;
+}
+
+.skillset-notification-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.skillset-notifications-footer {
+    padding: 12px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+.skillset-view-all-link {
+    color: #1e88e5;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.skillset-view-all-link:hover {
+    text-decoration: underline;
+}
+
+.skillset-notifications-error {
+    background-color: #ffebee;
+    border: 1px solid #ffcdd2;
+    border-radius: 4px;
+    padding: 15px;
+    color: #c62828;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Styles pour la barre d'administration */
+#wpadminbar .skillset-notifications-menu .ab-icon {
+    margin-right: 5px;
+}
+
+#wpadminbar .skillset-notifications-count {
+    display: inline-block;
+    background-color: #ddd;
+    color: #333;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    font-size: 11px;
+    margin-left: 2px;
+}
+
+#wpadminbar .skillset-notifications-count.has-unread {
+    background-color: #d32f2f;
+    color: #fff;
+}
+
+#wpadminbar .skillset-notification-item .read {
+    color: #666;
+}
+
+#wpadminbar .skillset-notification-item .unread {
+    color: #000;
+    font-weight: 500;
+}
+
+/* Styles pour les notifications en pop-up */
+.skillset-notification-popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    overflow: hidden;
+    animation: skillset-slide-in 0.3s ease-out;
+}
+
+@keyframes skillset-slide-in {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+.skillset-notification-popup-header {
+    background-color: #4e2a84;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skillset-notification-popup-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.skillset-notification-popup-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.skillset-notification-popup-content {
+    padding: 15px;
+}
+
+.skillset-notification-popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+.skillset-notification-popup-actions button {
+    background: none;
+    border: none;
+    color: #4e2a84;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.skillset-notification-popup-actions button:hover {
+    text-decoration: underline;
+}

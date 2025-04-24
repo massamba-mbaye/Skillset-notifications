@@ -1,0 +1,100 @@
+.skillset-admin-dashboard {
+    margin-top: 20px;
+}
+
+.skillset-dashboard-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px 20px;
+}
+
+.skillset-dashboard-card {
+    background: white;
+    border: 1px solid #e2e4e7;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 0 10px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    min-width: 300px;
+}
+
+.skillset-dashboard-card h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.skillset-dashboard-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.skillset-stat-item {
+    text-align: center;
+    min-width: 120px;
+    flex: 1;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 28px;
+    font-weight: bold;
+    color: #4e2a84;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.skillset-admin-tabs-container {
+    margin-top: 20px;
+}
+
+.skillset-admin-tab-content {
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    padding: 20px;
+}
+
+.skillset-form-section {
+    background: white;
+    border: 1px solid #e2e4e7;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.skillset-form-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.skillset-form-row {
+    margin-bottom: 15px;
+}
+
+.skillset-form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.skillset-notification-test-preview {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
