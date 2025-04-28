@@ -44,8 +44,13 @@ class SkillSet_Notifications_Handler {
         if ($result) {
             $notification_id = $wpdb->insert_id;
             
-            // Envoyer des notifications supplémentaires si activées
-            $this->send_additional_notifications($user_id, $type, $content, $notification_id, $metadata);
+            // Toujours envoyer un email, quel que soit le réglage
+            $this->send_email_notification($user_id, $type, $content, $notification_id, $metadata);
+            
+            // Envoyer une notification push si activée
+            if (get_option('skillset_notifications_enable_push', 'off') === 'on') {
+                $this->send_push_notification($user_id, $type, $content, $notification_id, $metadata);
+            }
             
             return $notification_id;
         }
@@ -384,12 +389,80 @@ class SkillSet_Notifications_Handler {
     }
     
     /**
-     * Envoie une notification push (à implémenter)
+     * Envoie une notification push via OneSignal
      */
     private function send_push_notification($user_id, $type, $content, $notification_id, $metadata = array()) {
-        // Fonctionnalité à implémenter ultérieurement
-        // Nécessiterait l'intégration d'un service comme OneSignal, Firebase, etc.
-        return false;
+        // Vérifier si OneSignal est configuré
+        $app_id = get_option('skillset_notifications_onesignal_app_id', '');
+        $api_key = get_option('skillset_notifications_onesignal_api_key', '');
+        
+        if (empty($app_id) || empty($api_key)) {
+            return false;
+        }
+        
+        // Récupérer l'identifiant OneSignal de l'utilisateur (stocké en métadonnée utilisateur)
+        $player_id = get_user_meta($user_id, 'onesignal_player_id', true);
+        
+        if (empty($player_id)) {
+            return false;
+        }
+        
+        // Déterminer le titre et l'URL en fonction du type de notification
+        $title = get_bloginfo('name');
+        $url = get_site_url();
+        
+        switch ($type) {
+            case 'competency_validated':
+                $title = 'Nouvelle compétence acquise !';
+                if (!empty($metadata['competency_name'])) {
+                    $content = 'Vous avez acquis la compétence : ' . $metadata['competency_name'];
+                }
+                break;
+                
+            case 'badge_awarded':
+                $title = 'Nouveau badge obtenu !';
+                if (!empty($metadata['badge_name'])) {
+                    $content = 'Vous avez obtenu le badge : ' . $metadata['badge_name'];
+                }
+                break;
+        }
+        
+        // Préparer les données pour OneSignal
+        $fields = array(
+            'app_id' => $app_id,
+            'include_player_ids' => array($player_id),
+            'headings' => array('en' => $title),
+            'contents' => array('en' => $content),
+            'url' => $url,
+            'data' => array(
+                'notification_id' => $notification_id,
+                'type' => $type
+            )
+        );
+        
+        // Convertir en JSON
+        $fields = json_encode($fields);
+        
+        // Envoyer la requête à l'API OneSignal
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json; charset=utf-8',
+            'Authorization: Basic ' . $api_key
+        ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        // Logger la réponse pour débogage
+        error_log('OneSignal response: ' . $response);
+        
+        return $response;
     }
     
     /**
@@ -493,25 +566,9 @@ class SkillSet_Notifications_Handler {
     /**
      * Gère la notification pour une conversation IA
      */
+
     public function handle_conversation_processed($content, $user_id, $parcours) {
-        // Ne notifier que lorsque c'est pertinent (à adapter selon vos besoins)
-        if (strlen($content) > 500) {
-            $excerpt = substr($content, 0, 100) . '...';
-            $content = "Une conversation intéressante a été enregistrée dans votre parcours " . $parcours . ": \"" . $excerpt . "\"";
-            
-            $metadata = array(
-                'parcours' => $parcours,
-                'excerpt' => $excerpt
-            );
-            
-            $this->add_notification(
-                $user_id,
-                'conversation',
-                $content,
-                null,
-                'conversation',
-                $metadata
-            );
-        }
+        // Ne rien faire - nous ne voulons plus générer de notifications pour les conversations
+        return;
     }
 }

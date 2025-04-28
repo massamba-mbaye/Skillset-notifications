@@ -9,7 +9,8 @@ class SkillSet_Notifications_Activator {
      */
     public static function activate() {
         self::create_tables();
-        self::ensure_metadata_column();  // Nouvelle fonction pour garantir l'existence de la colonne
+        self::ensure_metadata_column();
+        self::ensure_logs_table();
         self::setup_default_settings();
         
         // Vider le cache des permaliens
@@ -40,8 +41,25 @@ class SkillSet_Notifications_Activator {
             KEY is_read (is_read)
         ) $charset_collate;";
         
+        // Table des logs d'envoi de notifications
+        $logs_table = $wpdb->prefix . 'skillset_notification_logs';
+        $logs_sql = "CREATE TABLE $logs_table (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            type varchar(50) NOT NULL,
+            status varchar(20) NOT NULL,
+            message text NOT NULL,
+            details text DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id),
+            KEY type (type),
+            KEY status (status)
+        ) $charset_collate;";
+        
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
+        dbDelta($logs_sql);
     }
     
     /**
@@ -71,10 +89,52 @@ class SkillSet_Notifications_Activator {
     }
     
     /**
+     * Vérifie et crée la table des logs si nécessaire
+     * Cette fonction garantit la compatibilité avec les installations existantes
+     */
+    private static function ensure_logs_table() {
+        global $wpdb;
+        $logs_table = $wpdb->prefix . 'skillset_notification_logs';
+        
+        // Vérifier si la table existe
+        $table_exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s",
+            DB_NAME,
+            $logs_table
+        ));
+        
+        // Si la table n'existe pas, la créer
+        if (empty($table_exists)) {
+            $charset_collate = $wpdb->get_charset_collate();
+            
+            $logs_sql = "CREATE TABLE $logs_table (
+                id bigint(20) NOT NULL AUTO_INCREMENT,
+                user_id bigint(20) NOT NULL,
+                type varchar(50) NOT NULL,
+                status varchar(20) NOT NULL,
+                message text NOT NULL,
+                details text DEFAULT NULL,
+                created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                PRIMARY KEY  (id),
+                KEY user_id (user_id),
+                KEY type (type),
+                KEY status (status)
+            ) $charset_collate;";
+            
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($logs_sql);
+            
+            // Journaliser l'opération pour débogage
+            error_log('Table de logs créée : ' . $logs_table);
+        }
+    }
+    
+    /**
      * Configure les réglages par défaut
      */
     private static function setup_default_settings() {
-        add_option('skillset_notifications_enable_email', 'off');
+        // Activer l'envoi automatique des emails pour les compétences et badges par défaut
+        add_option('skillset_notifications_enable_email', 'on');
         add_option('skillset_notifications_enable_push', 'off');
         add_option('skillset_notifications_per_page', 10);
         add_option('skillset_notifications_auto_delete_days', 30);
@@ -90,5 +150,13 @@ class SkillSet_Notifications_Activator {
         
         add_option('skillset_notifications_subject_badge', 'Vous avez obtenu un nouveau badge sur %site_name%!');
         add_option('skillset_notifications_template_badge', "Bonjour %user_name%,\n\nFélicitations! Vous avez obtenu un nouveau badge dans votre parcours %parcours%.\n\nBadge: %badge_name%\nDescription: %badge_description%\n\nPartagez cette réussite avec vos amis et collègues!");
+
+        // Paramètres OneSignal pour les notifications push
+        add_option('skillset_notifications_onesignal_app_id', '');
+        add_option('skillset_notifications_onesignal_api_key', '');
+        
+        // Paramètres pour les diffusions manuelles
+        add_option('skillset_notifications_broadcast_subject', '%site_name% - Nouvelle annonce');
+        add_option('skillset_notifications_broadcast_template', "Bonjour %user_name%,\n\nUne nouvelle annonce a été publiée:\n\n%broadcast_title%\n\n%broadcast_content%\n\nL'équipe %site_name%");
     }
 }
